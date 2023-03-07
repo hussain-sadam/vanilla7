@@ -1,0 +1,119 @@
+<?php
+
+/**
+ * @file
+ * This module provides to call phoenix API after submitting the webform Travel arrangements and reiburesement.
+ *
+ * The initial development of this module is to provide only POST API call for
+ * webform submission, the record would be post to phoenix API
+ *
+ * @author Sadam Hussain <sadam.hussain@eesc.europa.eu>
+ */
+
+
+/**
+ * Implements hook_webform_submission_presave().
+ */
+function webform_post_api_webform_submission_presave($node, &$submission) {
+    // Check if the webform being submitted is the one we want to target.
+    if ($node->type == 'webform' && $node->nid == 1) {
+      // Get the value of a field in the webform submission.
+
+   // Set an error message.
+   drupal_set_message(t('Please fill out the required field.'), 'error');
+
+  // Save the webform submission values to the session.
+  $_SESSION['webform_post_api_webform_submission_values'] = $submission->data;
+
+
+  // Redirect back to the form.
+  drupal_goto('node/' . $node->nid , array('query' => array('source' => 'webform_post_api')));
+
+    }
+  }
+
+/**
+ * Implements hook_form_alter().
+ */
+function webform_post_api_form_alter(&$form, &$form_state, $form_id) {
+  // Check if the form is a webform with machine name "1" which is Travel arrangements and reiburesement.
+  if ($form_id == 'webform_client_form_1') {
+    // Add a submit handler to the form that will call the API.
+    $form['#validate'][]='webform_post_api_form_validate';
+    return $form;
+    //$form['#submit'][] = 'webform_post_api_webform_presave_submit_handler';
+  }
+}
+
+/**
+ * Validate handler for the webform that calls the API.
+ */
+function webform_post_api_form_validate($form,&$form_state)
+{
+    //where "firstname" is field name of webform firstname field
+    $firstname = $form_state['values']['submitted']['firstname'];
+    $surname = $form_state['values']['submitted']['firstname'];
+
+      // Call your custom function.
+      $phoenixResponse = webform_post_api_phoenixAPI($form_state);
+
+    if($phoenixResponse=='sadam')
+    {
+        dpm($form_state);
+
+        form_set_error('firstname','Please fill the form field, it should not be sadam');
+    }
+    // Then use regular expression to validate it.
+    // In above example i have check if firstnamefield is empty or not.
+}
+
+/**
+ * Custom function to call for phoenix API.
+ */
+function webform_post_api_phoenixAPI(&$form_state) {
+    //where "firstname" is field name of webform firstname field
+    $firstname = $form_state['values']['submitted']['firstname'];
+    $surname = $form_state['values']['submitted']['firstname'];
+    return $firstname;
+    // Your custom validation logic goes here.
+    // You can access the form values using $form_state['values'].
+    // If you encounter an error, you can set an error message using $form_state['error'].
+  }
+/**
+ * Submit handler for the webform that calls the API.
+ */
+
+function webform_post_api_webform_presave_submit_handler($form, &$form_state)
+{
+
+  // Get the values from the webform submission.
+  $values = $form_state['values']['submitted'];
+  $surname = $form_state['values']['submitted'][1];
+  $firstname = $form_state['values']['submitted'][2];
+  // Build the data to be sent to the API.
+  $data = array(
+    'firstname' => $firstname,
+    'surname' => $surname,
+    // Add more fields as needed.
+  );
+  print('<pre>');
+  print_r($data);
+  print('</pre>');
+exit;
+    // Send the data to the API.
+//   $url = 'https://example.com/api';
+//   $options = array(
+//     'method' => 'POST',
+//     'data' => http_build_query($data),
+//   );
+//   $response = drupal_http_request($url, $options);
+
+//   if($response->code == 200)
+//   {
+//     // proper response code
+//   }
+//   else
+//   {
+//     // some problem with submission
+//   }
+}
