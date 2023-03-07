@@ -74,32 +74,7 @@ function webform_post_api_phoenixAPI(&$form_state) {
     //where "firstname" is field name of webform firstname field
     $firstname = $form_state['values']['submitted']['firstname'];
     $surname = $form_state['values']['submitted']['firstname'];
-    return $firstname;
-    // Your custom validation logic goes here.
-    // You can access the form values using $form_state['values'].
-    // If you encounter an error, you can set an error message using $form_state['error'].
-  }
-/**
- * Submit handler for the webform that calls the API.
- */
 
-function webform_post_api_webform_presave_submit_handler($form, &$form_state)
-{
-
-  // Get the values from the webform submission.
-  $values = $form_state['values']['submitted'];
-  $surname = $form_state['values']['submitted'][1];
-  $firstname = $form_state['values']['submitted'][2];
-  // Build the data to be sent to the API.
-  $data = array(
-    'firstname' => $firstname,
-    'surname' => $surname,
-    // Add more fields as needed.
-  );
-  print('<pre>');
-  print_r($data);
-  print('</pre>');
-exit;
     // Send the data to the API.
 //   $url = 'https://example.com/api';
 //   $options = array(
@@ -116,4 +91,6 @@ exit;
 //   {
 //     // some problem with submission
 //   }
-}
+return $firstname;
+  }
+
